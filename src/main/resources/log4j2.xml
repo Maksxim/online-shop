@@ -1,0 +1,20 @@
+<Configuration status="info" name="baeldung" packages="">
+    <Appenders>
+        <Console name="stdout" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %p %m%n"/>
+        </Console>
+        <File name="myFile" fileName="app.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %p %m%n"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Logger name="by.tms.order" level="info" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="myFile"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="stdout"/>
+        </Root>
+    </Loggers>
+</Configuration>
+
