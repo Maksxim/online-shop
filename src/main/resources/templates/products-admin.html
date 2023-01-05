@@ -1,5 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<style>
+    .pagenumber {
+        display: inline;
+    }
+
+    .pagenumber a {
+        color: black;
+        float: left;
+        padding: 5px 5px;
+        text-decoration: none;
+    }
+
+    .pagenumber a.active {
+        background-color: gray;
+        color: white;
+        border-radius: 2px;
+    }
+</style>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -10,12 +28,13 @@
     <link rel="stylesheet" href="../css/shards.min.css">
 </head>
 <body>
-<div th:switch="${products}" class="container my-5">
+<div th:switch="${products.content}" class="container my-5">
     <div class="row">
         <div class="col-md-6">
             <h2 th:case="null">No products yet!</h2>
             <div th:case="*">
                 <h2 class="my-5">Products</h2>
+                <p class="my-5"><a href="/signup" class="btn btn-primary"><i class="fas fa-user-plus ml-2"></i></a></p>
                 <table class="table table-striped table-responsive-md">
                     <thead>
                     <tr>
@@ -26,7 +45,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="product : ${products}">
+                    <tr th:each="product : ${products.content}">
                         <td th:text="${product.description}"></td>
                         <td th:text="${product.price}"></td>
                         <td><a th:href="@{/edit/{id}(id=${product.id})}" class="btn btn-primary"><i class="fas fa-user-edit ml-2"></i></a></td>
@@ -35,7 +54,12 @@
                     </tbody>
                 </table>
             </div>
-            <p class="my-5"><a href="/signup" class="btn btn-primary"><i class="fas fa-user-plus ml-2"></i></a></p>
+            <div th:if="${products.totalPages > 0}" class="pagenumber"
+                 th:each="pageNumber : ${pageNumbers}">
+                <a th:href="@{/(size=${products.size}, page=${pageNumber})}"
+                   th:text=${pageNumber}
+                   th:class="${pageNumber==products.number + 1} ? active"></a>
+            </div>
         </div>
     </div>
 </div>

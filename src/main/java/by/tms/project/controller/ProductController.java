@@ -3,6 +3,8 @@ package by.tms.project.controller;
 import by.tms.project.entities.Product;
 import by.tms.project.services.ProductService;
 import org.apache.commons.io.FileUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,6 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 public class ProductController {
@@ -23,9 +29,23 @@ public class ProductController {
     }
 
     @GetMapping("/")
-    public String showProductList(Model model) {
-        model.addAttribute("products", service.getAll());
-        return "index";
+    public String showProductList(Model model,
+                                  @RequestParam("page") Optional<Integer> page,
+                                  @RequestParam("size") Optional<Integer> size) {
+        int currentPage = page.orElse(1);
+        int pageSize = size.orElse(10);
+
+        Page<Product> productPage = service.getAll(PageRequest.of(currentPage - 1, pageSize));
+        model.addAttribute("products", productPage);
+
+        int totalPages = productPage.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+        return "products-admin";
     }
 
     @GetMapping("/signup")
