@@ -14,7 +14,7 @@
     <h2 class="mb-5">Update Product</h2>
     <div class="row">
         <div class="col-md-6">
-            <form action="#" th:action="@{/update/{id}(id=${product.id})}" enctype="multipart/form-data" th:object="${product}" method="post">
+            <form action="#" th:action="@{/product/{id}(id=${product.id})}" enctype="multipart/form-data" th:object="${product}" method="post">
                 <div class="row">
                     <div class="form-group col-md-6">
                         <label for="description" class="col-form-label">Description</label>

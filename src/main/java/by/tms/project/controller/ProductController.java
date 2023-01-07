@@ -45,15 +45,15 @@ public class ProductController {
                     .collect(Collectors.toList());
             model.addAttribute("pageNumbers", pageNumbers);
         }
-        return "products-admin";
+        return "index";
     }
 
-    @GetMapping("/signup")
-    public String showSignUpForm(Product product) {
+    @GetMapping("/product")
+    public String showAddProductForm(Product product) {
         return "add-product";
     }
 
-    @PostMapping("/addproduct")
+    @PostMapping("/product")
     public String addProduct(@Valid Product product, BindingResult result, @RequestParam("image") MultipartFile file, Model model) throws IOException {
         if (result.hasErrors()) {
             return "add-product";
@@ -79,8 +79,8 @@ public class ProductController {
         return FileUtils.readFileToByteArray(new File(imagePath));
     }
 
-    @GetMapping("/edit/{id}")
-    public String showUpdateForm(@PathVariable("id") int id, Model model) {
+    @GetMapping("/product/{id}")
+    public String showEditForm(@PathVariable("id") int id, Model model) {
         Product product = service.getProduct(id);
         model.addAttribute("product", product);
         model.addAttribute("image", product);
@@ -88,7 +88,7 @@ public class ProductController {
         return "update-product";
     }
 
-    @PostMapping("/update/{id}")
+    @PostMapping("/product/{id}")
     public String updateProduct(@PathVariable("id") int id, @Valid Product product, BindingResult result, Model model,@RequestParam("image") MultipartFile file) throws IOException {
         if (result.hasErrors()) {
             product.setId(id);

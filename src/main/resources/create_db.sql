@@ -23,5 +23,3 @@ CREATE TABLE items(
                       order_id int not null,
                       constraint fk_orders foreign key (order_id) references orders(id)
 );
-
-SELECT * from orders o left join items i on o.id = i.order_id where o.id = 7
