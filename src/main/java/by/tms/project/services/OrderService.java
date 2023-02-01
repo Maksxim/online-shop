@@ -1,6 +1,7 @@
 package by.tms.project.services;
 
 import by.tms.project.Logger;
+import by.tms.project.dto.OrderDto;
 import by.tms.project.entities.Item;
 import by.tms.project.entities.Order;
 import by.tms.project.entities.Product;
@@ -9,11 +10,17 @@ import by.tms.project.repositories.ItemRepository;
 import by.tms.project.repositories.OrderRepository;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -32,9 +39,10 @@ public class OrderService {
     }
 
     @Logger
-    public Order createOrder(){
-        Order order = new Order();
+    public Order createOrder(Order order){
         Order createdOrder = orderRepository.save(order);
+        order.getItems().forEach(item -> item.setOrder(order));
+        itemRepository.saveAll(order.getItems());
         return createdOrder;
     }
 
@@ -83,4 +91,15 @@ public class OrderService {
         }
         return order.get();
     }
+    @Logger
+    public Page<OrderDto> getAll(Pageable pageable){
+        Page<Order> ordersPage = orderRepository.findAll(pageable);
+        List<Order> content = ordersPage.getContent();
+        List<OrderDto> newContent = new ArrayList<>();
+        if (!content.isEmpty()) {
+            newContent = content.stream().map(OrderDto::of).collect(Collectors.toList());
+        }
+        return new PageImpl<>(newContent, ordersPage.getPageable(), ordersPage.getTotalElements());
+    }
 }
+

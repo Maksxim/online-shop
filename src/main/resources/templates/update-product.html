@@ -10,21 +10,27 @@
     <link rel="stylesheet" href="../css/shards.min.css">
 </head>
 <body>
+<div th:replace="admin-navbar"></div>
 <div class="container my-5">
     <h2 class="mb-5">Update Product</h2>
     <div class="row">
         <div class="col-md-6">
-            <form action="#" th:action="@{/update/{id}(id=${product.id})}" enctype="multipart/form-data" th:object="${product}" method="post">
+            <form action="#" th:action="@{/admin/product/{id}(id=${product.id})}" enctype="multipart/form-data" th:object="${product}" method="post">
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <label for="description" class="col-form-label">Description</label>
-                        <input type="text" th:field="*{description}" class="form-control" id="description" placeholder="Description">
-                        <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-danger"></span>
+                        <label for="productName" class="col-form-label">ProductName</label>
+                        <input type="text" th:field="*{productName}" class="form-control" id="productName" placeholder="ProductName">
+                        <span th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}" class="text-danger"></span>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="price" class="col-form-label">Price</label>
                         <input type="text" th:field="*{price}" class="form-control" id="price" placeholder="Price">
                         <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="text-danger"></span>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">Description</span>
+                        <textarea class="form-control" aria-label="С текстовым полем" th:field="*{description}"></textarea>
+                        <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-danger"></span>
                     </div>
                     <div class="form-group col-md-6">
                         <img th:src="@{http://localhost:8080/product/{id}/image(id=${product.id})}">
@@ -37,8 +43,9 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 mt-5">
-                        <input type="submit" class="btn btn-primary" value="Update Product">
+                    <div class="col-md-6 mt-2">
+                        <input type="submit" class="btn btn-primary btn-sm" value="Update Product">
+                        <a class="btn btn-outline-primary btn-sm" type="button" href="/admin/product">Cancel</a>
                     </div>
                 </div>
             </form>

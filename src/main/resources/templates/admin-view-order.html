@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Order</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/shards.min.css">
+</head>
+<body>
+<div th:replace="admin-navbar"></div>
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div>
+                <h2 class="my-3">Order <i>[[${order.id}]]</i></h2>
+                <table class="table table-striped table-responsive-md">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Product name</th>
+                        <th>Price</th>
+                        <th>Count</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item: ${order.items}">
+                        <td th:text="${item.productId}"></td>
+                        <td th:text="${item.productName}"></td>
+                        <td th:text="'$'+${item.price}"></td>
+                        <td>
+                            [[${item.count}]]
+                        </td>
+                        <td th:text="'$'+${item.price * item.count}"></td>
+                    </tr>
+                    <tr class="table-secondary">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td th:text="'$'+${order.getTotalPrice}"></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <b>Date: </b>[[${order.dateTime}]]<br/>
+            <b>Name: </b>[[${order.name}]]<br/>
+            <b>Email: </b>[[${order.email}]]<br/>
+            <b>Phone: </b>[[${order.phone}]]<br/>
+            <b>Address: </b>[[${order.address}]]<br/>
+            <b>Payment method: </b>[[${order.paymentMethod}]]<br/>
+        </div>
+    </div>
+</div>
+</body>
+</html>

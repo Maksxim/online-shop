@@ -2,38 +2,91 @@ package by.tms.project.controller;
 
 import by.tms.project.entities.Product;
 import by.tms.project.services.ProductService;
+import by.tms.project.services.ShoppingCartService;
 import org.apache.commons.io.FileUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Controller
 public class ProductController {
 
     private final ProductService service;
+    private final ShoppingCartService shoppingCartService;
 
-    public ProductController(ProductService service){
-       this.service = service;
+    public ProductController(ProductService service, ShoppingCartService shoppingCartService) {
+        this.service = service;
+        this.shoppingCartService = shoppingCartService;
     }
 
-    @GetMapping("/")
-    public String showProductList(Model model) {
-        model.addAttribute("products", service.getAll());
-        return "index";
+    @GetMapping("/admin")
+    public String defaultAdminPage()
+    {
+        return "redirect:/admin/product";
     }
 
-    @GetMapping("/signup")
-    public String showSignUpForm(Product product) {
+
+
+    @GetMapping("/admin/product")
+    public String showAdminProductList(Model model,
+                                  @RequestParam("page") Optional<Integer> page,
+                                  @RequestParam("size") Optional<Integer> size) {
+        int currentPage = page.orElse(1);
+        int pageSize = size.orElse(10);
+
+        Page<Product> productPage = service.getAll(PageRequest.of(currentPage - 1, pageSize));
+        model.addAttribute("products", productPage);
+
+        int totalPages = productPage.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+        return "admin-product";
+    }
+
+    @GetMapping("/product")
+    public String showProductList(HttpServletRequest request, Model model,
+                                  @RequestParam("page") Optional<Integer> page,
+                                  @RequestParam("size") Optional<Integer> size) {
+        int currentPage = page.orElse(1);
+        int pageSize = size.orElse(10);
+
+        Page<Product> productPage = service.getAll(PageRequest.of(currentPage - 1, pageSize));
+        model.addAttribute("products", productPage);
+
+        int totalPages = productPage.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+        model.addAttribute("cartInfo", shoppingCartService.getCartInfoFromSession(request));
+        return "product";
+    }
+
+    @GetMapping("/admin/product/add")
+    public String showAddProductForm(Product product) {
         return "add-product";
     }
 
-    @PostMapping("/addproduct")
+    @PostMapping("/admin/product")
     public String addProduct(@Valid Product product, BindingResult result, @RequestParam("image") MultipartFile file, Model model) throws IOException {
         if (result.hasErrors()) {
             return "add-product";
@@ -45,7 +98,7 @@ public class ProductController {
             product.setImagePath(imagePath);
         }
         service.createProduct(product);
-        return "redirect:/";
+        return "redirect:/admin/product";
     }
 
     @GetMapping(value = "/product/{id}/image")
@@ -59,16 +112,15 @@ public class ProductController {
         return FileUtils.readFileToByteArray(new File(imagePath));
     }
 
-    @GetMapping("/edit/{id}")
-    public String showUpdateForm(@PathVariable("id") int id, Model model) {
+    @GetMapping("/admin/product/{id}")
+    public String showEditForm(@PathVariable("id") int id, Model model) {
         Product product = service.getProduct(id);
         model.addAttribute("product", product);
-        model.addAttribute("image", product);
 
         return "update-product";
     }
 
-    @PostMapping("/update/{id}")
+    @PostMapping("/admin/product/{id}")
     public String updateProduct(@PathVariable("id") int id, @Valid Product product, BindingResult result, Model model,@RequestParam("image") MultipartFile file) throws IOException {
         if (result.hasErrors()) {
             product.setId(id);
@@ -79,13 +131,21 @@ public class ProductController {
             product.setImagePath(imagePath);
         }
         service.updateProduct(product);
-        return "redirect:/";
+        return "redirect:/admin/product";
     }
 
-    @GetMapping("/delete/{id}")
+    @GetMapping("/product/{id}")
+    public String viewProduct(@PathVariable("id") int id, Model model, HttpServletRequest request){
+        Product product = service.getProduct(id);
+        model.addAttribute("product", product);
+        model.addAttribute("cartInfo", shoppingCartService.getCartInfoFromSession(request));
+        return "view-product";
+    }
+
+    @GetMapping("/admin/product/delete/{id}")
     public String deleteProduct(@PathVariable("id") int id, Model model) {
         service.delete(id);
 
-        return "redirect:/";
+        return "redirect:/admin/product";
     }
 }

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    .pagenumber {
+        display: inline;
+    }
+
+    .pagenumber a {
+        color: black;
+        float: left;
+        padding: 5px 5px;
+        text-decoration: none;
+    }
+
+    .pagenumber a.active {
+        background-color: gray;
+        color: white;
+        border-radius: 2px;
+    }
+</style>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Products</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/shards.min.css">
+</head>
+<body>
+<div th:replace="client-navbar"></div>
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-center row">
+        <h2 th:if="${products.content.empty}">No products yet!</h2>
+        <div class="col-md-10">
+            <div th:each="product : ${products.content}" class="mt-2 row p-2 bg-white border rounded">
+                <div class="col-md-3 mt-1"><img class="img-fluid img-responsive rounded product-image" th:src="@{http://localhost:8080/product/{id}/image(id=${product.id})}"></div>
+                <div class="col-md-6 mt-1">
+                    <h5 th:text="${product.productName}"></h5>
+                    <div class="d-flex flex-row">
+                        <div class="ratings mr-2"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i></div><span>310</span>
+                    </div>
+                    <p class="text-justify text-truncate para mb-0" th:text="${product.description}"><br><br></p>
+                </div>
+                <div class="align-items-center align-content-center col-md-3 border-left mt-1">
+                    <div class="d-flex flex-row align-items-center">
+                        <h4 class="mr-1" th:text="'$'+${product.price}"></h4>
+                    </div>
+                    <h6 class="text-success">Free shipping</h6>
+                    <div class="d-flex flex-column mt-4">
+                        <a class="btn btn-primary btn-sm" type="button" th:href="@{/addProductToCart/{id}(id=${product.id})}">Add to cart</a>
+                        <a class="btn btn-outline-primary btn-sm mt-2" type="button" th:href="@{/product/{id}(id=${product.id})}">View</a>
+                    </div>
+                </div>
+            </div>
+            <nav th:if="${products.totalPages > 0}" class="p-2" aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li th:each="pageNumber : ${pageNumbers}" class="page-item" th:classappend="${pageNumber==products.number + 1} ? active">
+                        <a th:href="@{/product/(size=${products.size}, page=${pageNumber})}" th:text="${pageNumber}"
+                           class="page-link"></a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -21,6 +21,8 @@ public class Item {
     private double price;
     @Column(name = "count")
     private int count;
+    @Column(name = "product_name")
+    private String productName;
 
     public Item(Integer id, int productId, double price, int count) {
         this.id = id;
