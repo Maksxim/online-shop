@@ -3,16 +3,16 @@ package by.tms.project.dto;
 import by.tms.project.entities.Item;
 import by.tms.project.entities.Order;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class OrderDto {
 
     private Integer id;

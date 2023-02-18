@@ -1,5 +1,6 @@
 package by.tms.project.entities;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 @Data
+@AllArgsConstructor
 @Entity
 @Table(name = "products")
 public class Product {
@@ -31,13 +33,6 @@ public class Product {
 
     @Column(name = "image_path")
     private String imagePath;
-
-    public Product(Integer id, String description, double price, String imagePath) {
-        this.id = id;
-        this.description = description;
-        this.price = price;
-        this.imagePath = imagePath;
-    }
 
     public Product() {
     }

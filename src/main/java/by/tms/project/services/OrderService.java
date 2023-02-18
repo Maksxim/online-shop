@@ -39,48 +39,11 @@ public class OrderService {
     }
 
     @Logger
-    public Order createOrder(Order order){
+    public Order createOrder(Order order) {
         Order createdOrder = orderRepository.save(order);
         order.getItems().forEach(item -> item.setOrder(order));
         itemRepository.saveAll(order.getItems());
         return createdOrder;
-    }
-
-    @Logger
-    @Transactional
-    public void addItem(int orderId, int productId, int count){
-        Item item = new Item();
-        item.setCount(count);
-        Product product = productService.getProduct(productId);
-        if(product == null) {
-            log.error("OrderService: Product id={} not found.", productId);
-            return;
-        }
-        item.setProductId(product.getId());
-        item.setPrice(product.getPrice());
-
-
-        Order order = getOrder(orderId);
-        if(order == null) {
-            log.error("OrderService: Order id={} not found.", orderId);
-            return;
-        }
-        item.setOrder(order);
-        itemRepository.save(item);
-        order.getItems().add(item);
-        orderRepository.save(order);
-    }
-
-    @Logger
-    public void finishOrder(int orderId) {
-       Order order = getOrder(orderId);
-       if (order == null) {
-           log.error("OrderService: Order not found.");
-         return;
-       }
-        order.setFinished(true);
-        order.setDateTime(LocalDateTime.now());
-        orderRepository.save(order);
     }
 
     @Logger

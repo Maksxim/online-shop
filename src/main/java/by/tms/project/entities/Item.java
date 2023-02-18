@@ -1,5 +1,7 @@
 package by.tms.project.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -7,6 +9,8 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "items")
+@Builder
+@AllArgsConstructor
 public class Item {
 
     @Id

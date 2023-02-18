@@ -1,0 +1,1 @@
+docker run -p 8000:8080 --env-file ./app-config/env.list --name online-shop --network online-shop-network online-shop:1.0

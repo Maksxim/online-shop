@@ -35,8 +35,7 @@ public class ProductService {
 
     @Logger
     public Product createProduct(Product product) {
-        Product createdProduct = productRepository.save(product);
-        return createdProduct;
+        return productRepository.save(product);
     }
 
     public String saveImage(MultipartFile file) throws IOException {
@@ -68,7 +67,6 @@ public class ProductService {
 
     @Logger
     public void delete(int productId){
-
         productRepository.deleteById(productId);
     }
     @Logger
