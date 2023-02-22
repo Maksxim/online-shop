@@ -1,12 +1,15 @@
 package by.tms.project.services;
 
 import by.tms.project.Logger;
+import by.tms.project.dto.ProductDto;
 import by.tms.project.entities.Product;
 import by.tms.project.exception.FileSizeException;
 import by.tms.project.exception.NotFoundException;
 import by.tms.project.repositories.ProductRepository;
+import by.tms.project.util.FileService;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,36 +27,45 @@ public class ProductService {
 
     private static org.apache.logging.log4j.Logger log = LogManager.getLogger(ProductService.class);
 
-    public static String UPLOAD_DIRECTORY = "D:/uploads";
+    @Value("${upload.directory}")
+    private String uploadDirectory;
 
     private ProductRepository productRepository;
 
+    private FileService fileService;
+
+    public void setUploadDirectory(String uploadDirectory) {
+        this.uploadDirectory = uploadDirectory;
+    }
+
     @Autowired
-    public ProductService(ProductRepository productRepository){
+    public ProductService(ProductRepository productRepository, FileService fileService){
         this.productRepository = productRepository;
+        this.fileService = fileService;
     }
 
     @Logger
-    public Product createProduct(Product product) {
+    public Product createProduct(Product product, MultipartFile file) throws IOException {
+        if (file != null && !file.isEmpty()) {
+            // вызвать метод сохранения файла
+            String imagePath = fileService.saveImage(file, uploadDirectory);
+            // добавить в обьект продукт значение пути файла
+            product.setImagePath(imagePath);
+        }
         return productRepository.save(product);
     }
 
-    public String saveImage(MultipartFile file) throws IOException {
-        if(file.getSize() > (1024 * 1024 * 1)){
-            throw new FileSizeException("file is too big");
-        }
-        // логика сохранения файла на диск
-        StringBuilder fileNames = new StringBuilder();
-        Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, file.getOriginalFilename());
-        fileNames.append(file.getOriginalFilename());
-        Files.write(fileNameAndPath, file.getBytes());
-        // метод возвращает return  путь к файлу
-        return fileNameAndPath.toString();
-    }
-
     @Logger
-    public void updateProduct(Product product){
-        productRepository.save(product);
+    public void updateProduct(ProductDto dto, MultipartFile file) throws IOException {
+        Product existingProduct = getProduct(dto.getId());
+        existingProduct.setProductName(dto.getProductName());
+        existingProduct.setDescription(dto.getDescription());
+        existingProduct.setPrice(dto.getPrice());
+        if(file != null && !file.isEmpty()) {
+            String imagePath = fileService.saveImage(file, uploadDirectory);
+            existingProduct.setImagePath(imagePath);
+        }
+        productRepository.save(existingProduct);
     }
 
     @Logger

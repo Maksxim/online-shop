@@ -1,5 +1,6 @@
 package by.tms.project.controller;
 
+import by.tms.project.dto.ProductDto;
 import by.tms.project.entities.Product;
 import by.tms.project.services.ProductService;
 import by.tms.project.services.ShoppingCartService;
@@ -91,13 +92,8 @@ public class ProductController {
         if (result.hasErrors()) {
             return "add-product";
         }
-        if (file != null && !file.isEmpty()) {
-            // вызвать метод сохранения файла
-            String imagePath = service.saveImage(file);
-            // добавить в обьект продукт значение пути файла
-            product.setImagePath(imagePath);
-        }
-        service.createProduct(product);
+
+        service.createProduct(product, file);
         return "redirect:/admin/product";
     }
 
@@ -121,16 +117,13 @@ public class ProductController {
     }
 
     @PostMapping("/admin/product/{id}")
-    public String updateProduct(@PathVariable("id") int id, @Valid Product product, BindingResult result, Model model,@RequestParam("image") MultipartFile file) throws IOException {
+    public String updateProduct(@PathVariable("id") int id, @Valid ProductDto productDto, BindingResult result, Model model, @RequestParam("image") MultipartFile file) throws IOException {
         if (result.hasErrors()) {
-            product.setId(id);
+            productDto.setId(id);
             return "update-product";
         }
-        if(file != null && !file.isEmpty()) {
-            String imagePath = service.saveImage(file);
-            product.setImagePath(imagePath);
-        }
-        service.updateProduct(product);
+
+        service.updateProduct(productDto, file);
         return "redirect:/admin/product";
     }
 

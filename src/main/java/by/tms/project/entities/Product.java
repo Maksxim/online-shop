@@ -1,6 +1,7 @@
 package by.tms.project.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import javax.validation.constraints.Size;
 @Data
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "products")
 public class Product {
 
